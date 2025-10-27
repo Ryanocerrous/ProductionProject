@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@babel/runtime": "^7.26.0",
     "@react-three/drei": "^9.105.5",
     "@react-three/fiber": "^8.17.10",
     "classnames": "^2.5.1",
