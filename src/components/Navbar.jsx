@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import Button from './Button.jsx';
 
 const navLinks = [
@@ -7,6 +8,8 @@ const navLinks = [
 ];
 
 function Navbar() {
+  const [activeIndex, setActiveIndex] = useState(0);
+
   return (
     <header className="navbar">
       <div className="container navbar-inner">
@@ -15,15 +18,26 @@ function Navbar() {
           <span className="navbar-title">ByteBite</span>
         </a>
         <div className="navbar-actions">
-          <div className="nav-links">
-            {navLinks.map((link) => (
-              <a key={link.href} href={link.href} className="nav-link">
+          <nav
+            className="pill-nav"
+            style={{ '--count': navLinks.length, '--active-index': activeIndex }}
+            aria-label="Primary navigation"
+          >
+            <span className="pill-nav-indicator" aria-hidden="true" />
+            {navLinks.map((link, index) => (
+              <a
+                key={link.href}
+                href={link.href}
+                className={`pill-nav-item ${activeIndex === index ? 'active' : ''}`}
+                onClick={() => setActiveIndex(index)}
+                onFocus={() => setActiveIndex(index)}
+              >
                 {link.label}
               </a>
             ))}
-          </div>
-          <Button variant="secondary" href="/login">
-            Login
+          </nav>
+          <Button variant="secondary" href="#cta">
+            Field brief
           </Button>
         </div>
       </div>
