@@ -40,26 +40,6 @@ function Brief() {
         <p>{projectAim}</p>
       </header>
 
-      <div className="brief-grid">
-        <article className="card">
-          <h3>Knowledge Base</h3>
-          <div className="brief-list">
-            <ListGroup title="Theories" items={theories} />
-            <ListGroup title="Key Concepts" items={concepts} />
-            <ListGroup title="People & Texts" items={people} />
-          </div>
-        </article>
-
-        <article className="card">
-          <h3>Research Resources</h3>
-          <ul className="brief-list tight">
-            {resources.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
-        </article>
-      </div>
-
       <div className="brief-block">
         <h3>7 Step Product Progression</h3>
         <div className="product-steps">
@@ -90,6 +70,29 @@ function Brief() {
               <p className="timeline-deliverables">{item.deliverables}</p>
             </div>
           ))}
+        </div>
+      </div>
+
+      <div className="brief-block">
+        <h3>Knowledge Base & Research Resources</h3>
+        <div className="brief-grid">
+          <article className="card">
+            <h4>Knowledge Base</h4>
+            <div className="brief-list">
+              <ListGroup title="Theories" items={theories} />
+              <ListGroup title="Key Concepts" items={concepts} />
+              <ListGroup title="People & Texts" items={people} />
+            </div>
+          </article>
+
+          <article className="card">
+            <h4>Research Resources</h4>
+            <ul className="brief-list tight">
+              {resources.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </article>
         </div>
       </div>
 
