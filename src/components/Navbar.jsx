@@ -38,7 +38,7 @@ function Navbar() {
               </a>
             ))}
           </nav>
-          <Button variant="secondary" href="/login">
+          <Button variant="secondary" href="/login" data-link>
             Login
           </Button>
         </div>
