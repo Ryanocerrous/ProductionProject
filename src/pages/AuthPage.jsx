@@ -13,8 +13,8 @@ function AuthPage() {
           <h1>{mode === 'login' ? 'Sign in to ByteBite Ops' : 'Launch your ByteBite profile'}</h1>
           <p>
             {mode === 'login'
-              ? 'Use your field-issued credentials to reach the operations console.'
-              : 'Provision a new operator account for staging field deployments and mission rehearsals.'}
+              ? 'Use your credentials to reach the operations console.'
+              : 'Receive hardware updates and new product information.'}
           </p>
         </header>
 
@@ -40,13 +40,13 @@ function AuthPage() {
           {mode === 'register' && (
             <div className="auth-field">
               <label htmlFor="name">Name</label>
-              <input id="name" name="name" type="text" placeholder="Alex Mercer" autoComplete="name" required />
+              <input id="name" name="name" type="text" placeholder="Justin Case" autoComplete="name" required />
             </div>
           )}
 
           <div className="auth-field">
             <label htmlFor="email">Email</label>
-            <input id="email" name="email" type="email" placeholder="alex@agency.gov" autoComplete="email" required />
+            <input id="email" name="email" type="email" placeholder="justin@leedsbeckettuniversity.ac.uk" autoComplete="email" required />
           </div>
 
           <div className="auth-field">
