@@ -2,9 +2,11 @@ import { useState } from 'react';
 import Button from './Button.jsx';
 
 const navLinks = [
-  { label: 'Testimonials', href: '#testimonials' },
   { label: 'Features', href: '#features' },
-  { label: 'Updates', href: '#updates' }
+  { label: 'Updates', href: '#updates' },
+  { label: 'Testimonials', href: '#testimonials' },
+  { label: 'Project', href: '#product-progression' },
+  { label: 'Book Field Brief', href: '#cta' }
 ];
 
 function Navbar() {
@@ -36,8 +38,8 @@ function Navbar() {
               </a>
             ))}
           </nav>
-          <Button variant="secondary" href="#cta">
-            Field brief
+          <Button variant="secondary" href="/login">
+            Login
           </Button>
         </div>
       </div>
