@@ -9,6 +9,9 @@
       "permanent": true
     }
   ],
+  "rewrites": [
+    { "source": "/login", "destination": "/" }
+  ],
   "headers": [
     {
       "source": "/assets/(.*)",
