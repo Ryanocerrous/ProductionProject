@@ -194,7 +194,11 @@ function ModelInner({
       lastX = event.clientX;
       lastY = event.clientY;
       outer.current.rotation.y += dx * ROTATE_SPEED;
-      outer.current.rotation.x += dy * ROTATE_SPEED;
+      outer.current.rotation.x = THREE.MathUtils.clamp(
+        outer.current.rotation.x + dy * ROTATE_SPEED,
+        -Math.PI / 2.2,
+        Math.PI / 2.2
+      );
       vel.current = { x: dx * ROTATE_SPEED, y: dy * ROTATE_SPEED };
       invalidate();
     };
@@ -268,7 +272,11 @@ function ModelInner({
         lastX = event.clientX;
         lastY = event.clientY;
         outer.current.rotation.y += dx * ROTATE_SPEED;
-        outer.current.rotation.x += dy * ROTATE_SPEED;
+        outer.current.rotation.x = THREE.MathUtils.clamp(
+          outer.current.rotation.x + dy * ROTATE_SPEED,
+          -Math.PI / 2.2,
+          Math.PI / 2.2
+        );
         vel.current = { x: dx * ROTATE_SPEED, y: dy * ROTATE_SPEED };
         invalidate();
       } else if (mode === 'pinch' && touches.size === 2) {
@@ -327,7 +335,11 @@ function ModelInner({
     projected.y += yOff + cPar.current.y;
     outer.current.position.copy(projected.unproject(camera));
 
-    outer.current.rotation.x += cHov.current.x - prevHoverX;
+    outer.current.rotation.x = THREE.MathUtils.clamp(
+      outer.current.rotation.x + (cHov.current.x - prevHoverX),
+      -Math.PI / 2.2,
+      Math.PI / 2.2
+    );
     outer.current.rotation.y += cHov.current.y - prevHoverY;
 
     if (autoRotate) {
@@ -336,7 +348,11 @@ function ModelInner({
     }
 
     outer.current.rotation.y += vel.current.x;
-    outer.current.rotation.x += vel.current.y;
+    outer.current.rotation.x = THREE.MathUtils.clamp(
+      outer.current.rotation.x + vel.current.y,
+      -Math.PI / 2.2,
+      Math.PI / 2.2
+    );
     vel.current.x *= INERTIA;
     vel.current.y *= INERTIA;
 

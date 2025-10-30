@@ -13,17 +13,18 @@ function ModelShowcase() {
                 url="/media/bytebite-unit.glb"
                 width="100%"
                 height="100%"
-                enableManualZoom
+                enableManualZoom={false}
                 enableMouseParallax={false}
                 enableHoverRotation={false}
                 autoRotate
-                autoRotateSpeed={0.25}
+                autoRotateSpeed={0.18}
                 environmentPreset="night"
                 showScreenshotButton={false}
                 autoFrame
-                defaultDistance={0.6}
-                minZoomDistance={4.25}
-                maxZoomDistance={6.4}
+                defaultDistance={1.4}
+                minZoomDistance={1.1}
+                maxZoomDistance={2.2}
+                enableManualRotation
               />
             </div>
             <p>

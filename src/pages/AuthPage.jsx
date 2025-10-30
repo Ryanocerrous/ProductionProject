@@ -46,7 +46,7 @@ function AuthPage() {
 
           <div className="auth-field">
             <label htmlFor="email">Email</label>
-            <input id="email" name="email" type="email" placeholder="justin@leedsbeckettuniversity.ac.uk" autoComplete="email" required />
+            <input id="email" name="email" type="email" placeholder="justin@leedsbeckett.ac.uk" autoComplete="email" required />
           </div>
 
           <div className="auth-field">
