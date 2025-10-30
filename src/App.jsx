@@ -14,12 +14,12 @@ function App() {
       <Navbar />
       <main>
         <Hero />
-        <ModelShowcase />
         <Brief />
+        <ModelShowcase />
         <Features />
-        <Testimonials />
         <Updates />
         <CTA />
+        <Testimonials />
       </main>
       <Footer />
     </div>

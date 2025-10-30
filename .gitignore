@@ -1,24 +1,19 @@
-# Build output
-dist/
-bytebite-web/dist/
-
-# Dependencies
+### Node & Vite ###
 node_modules/
-bytebite-web/node_modules/
-
-# Caches & logs
+dist/
 .vite/
-bytebite-web/.vite/
+
+### Logs ###
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+
+### Build artifacts ###
+coverage/
 .eslintcache
 
-# Coverage
-coverage/
-
-# Editor / OS junk
+### OS / Editor junk ###
 .DS_Store
 Thumbs.db
 *.swp

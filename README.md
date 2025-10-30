@@ -1,1 +1,13 @@
-# Welcome to my Level 6 Production Project readme, here you will find information about code updates, what ive done on my production in terms of code week by week, and what i intend to do next.
+# ByteBite Web
+
+Marketing site for ByteBite built with Vite + React.
+
+## Scripts
+
+```bash
+npm install
+npm run dev
+npm run build
+```
+
+Deploys automatically via Vercel using `vercel.json` for redirects and headers.

@@ -15,17 +15,6 @@ function Navbar() {
           <span className="navbar-title">ByteBite</span>
         </a>
         <div className="navbar-actions">
-          <button
-            type="button"
-            className="navbar-toggle"
-            aria-label="Toggle navigation"
-            onClick={() => {
-              const nav = document.querySelector('.nav-links');
-              nav?.classList.toggle('nav-open');
-            }}
-          >
-            ☰
-          </button>
           <div className="nav-links">
             {navLinks.map((link) => (
               <a key={link.href} href={link.href} className="nav-link">

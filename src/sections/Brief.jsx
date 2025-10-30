@@ -21,6 +21,7 @@ function Brief() {
   const resources = researchResources ?? [];
   const references = bibliography ?? [];
   const risks = riskRegister ?? [];
+  const aiEntries = generativeAiLog ?? [];
 
   const moscowBuckets = [
     { key: 'must', label: 'Must Have' },
@@ -143,12 +144,32 @@ function Brief() {
       </div>
 
       <div className="brief-block">
-        <h3>Suggested Bibliography</h3>
-        <ul className="references">
-          {references.map((item) => (
-            <li key={item}>{item}</li>
-          ))}
-        </ul>
+        <h3>References & Research Log</h3>
+        <div className="references">
+          <div>
+            <h4>Suggested Bibliography</h4>
+            <ul>
+              {references.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <h4>Generative AI Log</h4>
+            <ul className="ai-log">
+              {aiEntries.map((entry, index) => (
+                <li key={`${entry.date}-${index}`}>
+                  <div className="ai-log-meta">
+                    <span>{entry.date}</span>
+                    <span>{entry.tool}</span>
+                  </div>
+                  <p className="ai-log-prompt">{entry.prompt}</p>
+                  <p className="ai-log-summary">{entry.summary}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
       </div>
     </section>
   );
