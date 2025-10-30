@@ -1,10 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './App.jsx';
+import LoginRouter from './LoginRouter.jsx';
 import './styles/global.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <App />
+    <LoginRouter />
   </React.StrictMode>
 );
