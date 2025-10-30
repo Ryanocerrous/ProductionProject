@@ -6,7 +6,7 @@ const navLinks = [
   { label: 'Updates', href: '#updates' },
   { label: 'Testimonials', href: '#testimonials' },
   { label: 'Project', href: '#product-progression' },
-  { label: 'Book Field Brief', href: '#cta' }
+  { label: 'Book Test', href: '#cta' }
 ];
 
 function Navbar() {
