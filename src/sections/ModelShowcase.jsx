@@ -20,13 +20,12 @@ function ModelShowcase() {
                 autoRotateSpeed={0.12}
                 environmentPreset="night"
                 showScreenshotButton={false}
-                autoFrame
                 defaultRotationX={-8}
                 defaultRotationY={24}
-                defaultZoom={0.75}
-                minZoomDistance={0.6}
-                maxZoomDistance={1.4}
-                scaleMultiplier={5}
+                defaultZoom={2.1}
+                minZoomDistance={1.4}
+                maxZoomDistance={3.5}
+                scaleMultiplier={2.8}
                 enableManualRotation
               />
             </div>

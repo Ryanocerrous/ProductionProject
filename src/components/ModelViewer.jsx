@@ -15,6 +15,9 @@ const PARALLAX_MAG = 0.05;
 const PARALLAX_EASE = 0.12;
 const HOVER_MAG = deg2rad(6);
 const HOVER_EASE = 0.15;
+const MAX_PITCH = deg2rad(18);
+const FRAME_PADDING = 2.05;
+const PITCH_DAMPING = 0.0;
 
 const Loader = ({ placeholderSrc }) => {
   const { progress, active } = useProgress();
@@ -55,6 +58,7 @@ const ModelInner = ({
   initPitch,
   minZoom,
   maxZoom,
+  cameraDistance,
   scaleMultiplier,
   enableMouseParallax,
   enableManualRotation,
@@ -69,6 +73,27 @@ const ModelInner = ({
   const outer = useRef(null);
   const inner = useRef(null);
   const { camera, gl } = useThree();
+
+  const pitchRef = useRef(0);
+  const clampPitch = (value) => THREE.MathUtils.clamp(value, -MAX_PITCH, MAX_PITCH);
+  const setPitch = (value) => {
+    const clamped = clampPitch(value);
+    pitchRef.current = clamped;
+    if (outer.current) {
+      outer.current.rotation.x = clamped;
+    }
+    return clamped;
+  };
+  const applyPitchDelta = (delta) => {
+    if (!outer.current || delta === 0) return 0;
+    const next = clampPitch(pitchRef.current + delta);
+    const applied = next - pitchRef.current;
+    if (applied !== 0) {
+      pitchRef.current = next;
+      outer.current.rotation.x = next;
+    }
+    return applied;
+  };
 
   const vel = useRef({ x: 0, y: 0 });
   const tPar = useRef({ x: 0, y: 0 });
@@ -85,7 +110,7 @@ const ModelInner = ({
     return null;
   }, [url, ext]);
 
-  const pivotW = useRef(new THREE.Vector3());
+  const workingCenter = useRef(new THREE.Vector3());
   useLayoutEffect(() => {
     if (!content) return;
     const g = inner.current;
@@ -93,10 +118,19 @@ const ModelInner = ({
     g.add(content);
     g.updateWorldMatrix(true, true);
 
-    const sphere = new THREE.Box3().setFromObject(g).getBoundingSphere(new THREE.Sphere());
-    const scale = 1 / (sphere.radius * 2);
-    g.position.set(-sphere.center.x, -sphere.center.y, -sphere.center.z);
-    g.scale.setScalar(scale * scaleMultiplier);
+    const box = new THREE.Box3().setFromObject(content);
+    const center = box.getCenter(workingCenter.current.set(0, 0, 0));
+    const sphere = box.getBoundingSphere(new THREE.Sphere());
+    if (!sphere) return;
+
+    content.position.sub(center);
+    content.updateMatrixWorld(true);
+
+    const baseScale = scaleMultiplier / (sphere.radius * 2);
+    g.scale.setScalar(baseScale);
+    g.position.set(0, 0, 0);
+    pivot.set(0, 0, 0);
+    outer.current.position.set(0, 0, 0);
 
     g.traverse((o) => {
       if (o.isMesh) {
@@ -109,17 +143,24 @@ const ModelInner = ({
       }
     });
 
-    g.getWorldPosition(pivotW.current);
-    pivot.copy(pivotW.current);
-    outer.current.rotation.set(initPitch, initYaw, 0);
+    const initialPitch = setPitch(initPitch);
+    if (outer.current) {
+      outer.current.rotation.set(initialPitch, initYaw, 0);
+    }
 
-    if (autoFrame && camera.isPerspectiveCamera) {
+    if (camera.isPerspectiveCamera) {
       const persp = camera;
-      const fitR = sphere.radius * scale;
-      const distance = (fitR * 1.2) / Math.sin((persp.fov * Math.PI) / 180 / 2);
-      persp.position.set(pivotW.current.x, pivotW.current.y, pivotW.current.z + distance);
-      persp.near = distance / 10;
-      persp.far = distance * 10;
+      const halfFov = deg2rad(persp.fov * 0.5);
+      const scaledRadius = sphere.radius * baseScale * FRAME_PADDING;
+      const fitDistance = scaledRadius / Math.sin(halfFov);
+      const desired = THREE.MathUtils.clamp(cameraDistance, minZoom, maxZoom);
+      const distance = autoFrame ? Math.max(desired, fitDistance) : desired;
+      const near = Math.max(distance / 10, 0.01);
+      const far = Math.max(distance * 10, near + 0.1);
+      persp.position.set(0, 0, distance);
+      persp.near = near;
+      persp.far = far;
+      persp.lookAt(0, 0, 0);
       persp.updateProjectionMatrix();
     }
 
@@ -165,13 +206,11 @@ const ModelInner = ({
       const dy = event.clientY - lastY;
       lastX = event.clientX;
       lastY = event.clientY;
-      outer.current.rotation.y += dx * ROTATE_SPEED;
-      outer.current.rotation.x = THREE.MathUtils.clamp(
-        outer.current.rotation.x + dy * ROTATE_SPEED,
-        -Math.PI / 2.2,
-        Math.PI / 2.2
-      );
-      vel.current = { x: dx * ROTATE_SPEED, y: dy * ROTATE_SPEED };
+      const yawDelta = dx * ROTATE_SPEED;
+      outer.current.rotation.y += yawDelta;
+      const pitchDelta = dy * ROTATE_SPEED * PITCH_DAMPING;
+      const appliedPitch = applyPitchDelta(pitchDelta);
+      vel.current = { x: yawDelta, y: appliedPitch };
       invalidate();
     };
 
@@ -245,13 +284,11 @@ const ModelInner = ({
         const dy = event.clientY - lastY;
         lastX = event.clientX;
         lastY = event.clientY;
-        outer.current.rotation.y += dx * ROTATE_SPEED;
-        outer.current.rotation.x = THREE.MathUtils.clamp(
-          outer.current.rotation.x + dy * ROTATE_SPEED,
-          -Math.PI / 2.2,
-          Math.PI / 2.2
-        );
-        vel.current = { x: dx * ROTATE_SPEED, y: dy * ROTATE_SPEED };
+        const yawDelta = dx * ROTATE_SPEED;
+        outer.current.rotation.y += yawDelta;
+        const pitchDelta = dy * ROTATE_SPEED * PITCH_DAMPING;
+        const appliedPitch = applyPitchDelta(pitchDelta);
+        vel.current = { x: yawDelta, y: appliedPitch };
         invalidate();
       } else if (mode === 'pinch' && touches.size === 2) {
         event.preventDefault();
@@ -304,16 +341,11 @@ const ModelInner = ({
     cHov.current.x += (tHov.current.x - cHov.current.x) * HOVER_EASE;
     cHov.current.y += (tHov.current.y - cHov.current.y) * HOVER_EASE;
 
-    outer.current.position.copy(pivotW.current);
-    outer.current.position.x += xOff + cPar.current.x;
-    outer.current.position.y += yOff + cPar.current.y;
+    outer.current.position.set(xOff + cPar.current.x, yOff + cPar.current.y, 0);
 
-    outer.current.rotation.x = THREE.MathUtils.clamp(
-      outer.current.rotation.x + (cHov.current.x - prevHoverX),
-      -Math.PI / 2.2,
-      Math.PI / 2.2
-    );
+    const hoverPitch = applyPitchDelta((cHov.current.x - prevHoverX) * PITCH_DAMPING);
     outer.current.rotation.y += cHov.current.y - prevHoverY;
+    if (Math.abs(hoverPitch) > 1e-5) needsUpdate = true;
 
     if (autoRotate) {
       outer.current.rotation.y += autoRotateSpeed * dt;
@@ -321,15 +353,12 @@ const ModelInner = ({
     }
 
     outer.current.rotation.y += vel.current.x;
-    outer.current.rotation.x = THREE.MathUtils.clamp(
-      outer.current.rotation.x + vel.current.y,
-      -Math.PI / 2.2,
-      Math.PI / 2.2
-    );
+    const inertiaPitch = applyPitchDelta(vel.current.y);
     vel.current.x *= INERTIA;
     vel.current.y *= INERTIA;
 
-    if (Math.abs(vel.current.x) > 1e-4 || Math.abs(vel.current.y) > 1e-4) needsUpdate = true;
+    if (Math.abs(vel.current.x) > 1e-4) needsUpdate = true;
+    if (Math.abs(inertiaPitch) > 1e-4) needsUpdate = true;
     if (
       Math.abs(cPar.current.x - tPar.current.x) > 1e-4 ||
       Math.abs(cPar.current.y - tPar.current.y) > 1e-4 ||
@@ -392,8 +421,8 @@ const ModelViewer = ({
   const sceneRef = useRef(null);
   const cameraRef = useRef(null);
 
-  const initYaw = deg2rad(defaultRotationX);
-  const initPitch = deg2rad(defaultRotationY);
+  const initPitch = deg2rad(defaultRotationX);
+  const initYaw = deg2rad(defaultRotationY);
   const camZ = Math.min(Math.max(defaultZoom, minZoomDistance), maxZoomDistance);
 
   const capture = () => {
@@ -486,6 +515,7 @@ const ModelViewer = ({
             initPitch={initPitch}
             minZoom={minZoomDistance}
             maxZoom={maxZoomDistance}
+            cameraDistance={camZ}
             scaleMultiplier={scaleMultiplier}
             enableMouseParallax={enableMouseParallax}
             enableManualRotation={enableManualRotation}
