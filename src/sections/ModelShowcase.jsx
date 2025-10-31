@@ -17,13 +17,15 @@ function ModelShowcase() {
                 enableMouseParallax={false}
                 enableHoverRotation={false}
                 autoRotate
-                autoRotateSpeed={0.08}
+                autoRotateSpeed={0.15}
                 environmentPreset="night"
                 showScreenshotButton={false}
                 autoFrame
-                defaultDistance={5}
-                minZoomDistance={5}
-                maxZoomDistance={10}
+                defaultRotationX={-12}
+                defaultRotationY={18}
+                defaultZoom={1.65}
+                minZoomDistance={1.2}
+                maxZoomDistance={2.5}
                 enableManualRotation
               />
             </div>

@@ -1,8 +1,8 @@
+/* eslint-disable react-hooks/rules-of-hooks */
+/* eslint-disable react/no-unknown-property */
 import { Suspense, useRef, useLayoutEffect, useEffect, useMemo } from 'react';
 import { Canvas, useFrame, useLoader, useThree, invalidate } from '@react-three/fiber';
-import { OrbitControls, Html, Environment, ContactShadows, useProgress } from '@react-three/drei';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
+import { OrbitControls, useGLTF, useFBX, useProgress, Html, Environment, ContactShadows } from '@react-three/drei';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 import * as THREE from 'three';
 
@@ -16,40 +16,7 @@ const PARALLAX_EASE = 0.12;
 const HOVER_MAG = deg2rad(6);
 const HOVER_EASE = 0.15;
 
-const loaderMap = {
-  glb: GLTFLoader,
-  gltf: GLTFLoader,
-  fbx: FBXLoader,
-  obj: OBJLoader
-};
-
-function useModelContent(url) {
-  const extension = useMemo(() => url.split('.').pop().toLowerCase(), [url]);
-  const LoaderClass = loaderMap[extension];
-
-  useEffect(() => {
-    if (!LoaderClass) {
-      console.error(`ModelViewer: unsupported file format "${extension}". Falling back to GLTF loader.`);
-    }
-    if (LoaderClass && useLoader.preload) {
-      useLoader.preload(LoaderClass, url);
-    }
-  }, [LoaderClass, url]);
-
-  const resource = useLoader(LoaderClass ?? GLTFLoader, url);
-
-  return useMemo(() => {
-    if (!resource) return null;
-    if (resource.scene) return resource.scene.clone();
-    if (resource.isObject3D) return resource.clone();
-    if (resource.clone) return resource.clone();
-    const group = new THREE.Group();
-    group.add(resource);
-    return group;
-  }, [resource]);
-}
-
-function Loader({ placeholderSrc }) {
+const Loader = ({ placeholderSrc }) => {
   const { progress, active } = useProgress();
   if (!active && placeholderSrc) return null;
   return (
@@ -61,9 +28,9 @@ function Loader({ placeholderSrc }) {
       )}
     </Html>
   );
-}
+};
 
-function DesktopControls({ pivot, min, max, zoomEnabled }) {
+const DesktopControls = ({ pivot, min, max, zoomEnabled }) => {
   const ref = useRef(null);
   useFrame(() => ref.current?.target.copy(pivot));
   return (
@@ -77,9 +44,9 @@ function DesktopControls({ pivot, min, max, zoomEnabled }) {
       maxDistance={max}
     />
   );
-}
+};
 
-function ModelInner({
+const ModelInner = ({
   url,
   xOff,
   yOff,
@@ -88,7 +55,6 @@ function ModelInner({
   initPitch,
   minZoom,
   maxZoom,
-  defaultDistance,
   enableMouseParallax,
   enableManualRotation,
   enableHoverRotation,
@@ -98,7 +64,7 @@ function ModelInner({
   autoRotate,
   autoRotateSpeed,
   onLoaded
-}) {
+}) => {
   const outer = useRef(null);
   const inner = useRef(null);
   const { camera, gl } = useThree();
@@ -109,43 +75,48 @@ function ModelInner({
   const tHov = useRef({ x: 0, y: 0 });
   const cHov = useRef({ x: 0, y: 0 });
 
-  const content = useModelContent(url);
+  const ext = useMemo(() => url.split('.').pop().toLowerCase(), [url]);
+  const content = useMemo(() => {
+    if (ext === 'glb' || ext === 'gltf') return useGLTF(url).scene.clone();
+    if (ext === 'fbx') return useFBX(url).clone();
+    if (ext === 'obj') return useLoader(OBJLoader, url).clone();
+    console.error('ModelViewer: unsupported format', ext);
+    return null;
+  }, [url, ext]);
 
   const pivotW = useRef(new THREE.Vector3());
   useLayoutEffect(() => {
     if (!content) return;
-    const group = inner.current;
-    group.clear();
-    group.add(content);
-    group.updateWorldMatrix(true, true);
+    const g = inner.current;
+    g.clear();
+    g.add(content);
+    g.updateWorldMatrix(true, true);
 
-    const sphere = new THREE.Box3().setFromObject(group).getBoundingSphere(new THREE.Sphere());
-    const safeRadius = Math.max(sphere.radius, 1e-4);
-    const scale = 1 / (safeRadius * 2);
-    group.position.set(-sphere.center.x, -sphere.center.y, -sphere.center.z);
-    group.scale.setScalar(scale);
+    const sphere = new THREE.Box3().setFromObject(g).getBoundingSphere(new THREE.Sphere());
+    const scale = 1 / (sphere.radius * 2);
+    g.position.set(-sphere.center.x, -sphere.center.y, -sphere.center.z);
+    g.scale.setScalar(scale);
 
-    group.traverse((obj) => {
-      if (obj.isMesh) {
-        obj.castShadow = true;
-        obj.receiveShadow = true;
+    g.traverse((o) => {
+      if (o.isMesh) {
+        o.castShadow = true;
+        o.receiveShadow = true;
         if (fadeIn) {
-          obj.material.transparent = true;
-          obj.material.opacity = 0;
+          o.material.transparent = true;
+          o.material.opacity = 0;
         }
       }
     });
 
-    group.getWorldPosition(pivotW.current);
+    g.getWorldPosition(pivotW.current);
     pivot.copy(pivotW.current);
     outer.current.rotation.set(initPitch, initYaw, 0);
 
     if (autoFrame && camera.isPerspectiveCamera) {
       const persp = camera;
-      const fitRadius = safeRadius * scale;
-      const distance = (fitRadius * 1.2) / Math.sin((persp.fov * Math.PI) / 180 / 2);
-      const targetDistance = defaultDistance ?? distance;
-      persp.position.set(pivotW.current.x, pivotW.current.y, pivotW.current.z + targetDistance);
+      const fitR = sphere.radius * scale;
+      const distance = (fitR * 1.2) / Math.sin((persp.fov * Math.PI) / 180 / 2);
+      persp.position.set(pivotW.current.x, pivotW.current.y, pivotW.current.z + distance);
       persp.near = distance / 10;
       persp.far = distance * 10;
       persp.updateProjectionMatrix();
@@ -156,8 +127,8 @@ function ModelInner({
       const id = setInterval(() => {
         t += 0.05;
         const opacity = Math.min(t, 1);
-        group.traverse((obj) => {
-          if (obj.isMesh) obj.material.opacity = opacity;
+        g.traverse((o) => {
+          if (o.isMesh) o.material.opacity = opacity;
         });
         invalidate();
         if (opacity === 1) {
@@ -174,63 +145,59 @@ function ModelInner({
 
   useEffect(() => {
     if (!enableManualRotation || isTouch) return;
-    const canvas = gl.domElement;
+    const el = gl.domElement;
     let dragging = false;
     let lastX = 0;
     let lastY = 0;
 
-    const handleDown = (event) => {
+    const down = (event) => {
       if (event.pointerType !== 'mouse' && event.pointerType !== 'pen') return;
       dragging = true;
       lastX = event.clientX;
       lastY = event.clientY;
-      window.addEventListener('pointerup', handleUp);
+      window.addEventListener('pointerup', up);
     };
 
-    const handleMove = (event) => {
+    const move = (event) => {
       if (!dragging) return;
       const dx = event.clientX - lastX;
       const dy = event.clientY - lastY;
       lastX = event.clientX;
       lastY = event.clientY;
       outer.current.rotation.y += dx * ROTATE_SPEED;
-      outer.current.rotation.x = THREE.MathUtils.clamp(
-        outer.current.rotation.x + dy * ROTATE_SPEED,
-        -Math.PI / 2.2,
-        Math.PI / 2.2
-      );
+      outer.current.rotation.x += dy * ROTATE_SPEED;
       vel.current = { x: dx * ROTATE_SPEED, y: dy * ROTATE_SPEED };
       invalidate();
     };
 
-    const handleUp = () => {
+    const up = () => {
       dragging = false;
-      window.removeEventListener('pointerup', handleUp);
+      window.removeEventListener('pointerup', up);
     };
 
-    canvas.addEventListener('pointerdown', handleDown);
-    canvas.addEventListener('pointermove', handleMove);
+    el.addEventListener('pointerdown', down);
+    el.addEventListener('pointermove', move);
     return () => {
-      canvas.removeEventListener('pointerdown', handleDown);
-      canvas.removeEventListener('pointermove', handleMove);
-      window.removeEventListener('pointerup', handleUp);
+      el.removeEventListener('pointerdown', down);
+      el.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', up);
     };
   }, [gl, enableManualRotation]);
 
   useEffect(() => {
     if (!enableManualRotation || !isTouch) return;
-    const canvas = gl.domElement;
+    const el = gl.domElement;
     const touches = new Map();
 
     let mode = 'idle';
-    let startX = 0;
-    let startY = 0;
-    let lastX = 0;
-    let lastY = 0;
-    let startDist = 0;
-    let startZoom = 0;
+    let startX = 0,
+      startY = 0,
+      lastX = 0,
+      lastY = 0,
+      startDist = 0,
+      startZoom = 0;
 
-    const handleDown = (event) => {
+    const down = (event) => {
       if (event.pointerType !== 'touch') return;
       touches.set(event.pointerId, { x: event.clientX, y: event.clientY });
       if (touches.size === 1) {
@@ -242,11 +209,12 @@ function ModelInner({
         const [a, b] = [...touches.values()];
         startDist = Math.hypot(a.x - b.x, a.y - b.y);
         startZoom = camera.position.z;
+        event.preventDefault();
       }
       invalidate();
     };
 
-    const handleMove = (event) => {
+    const move = (event) => {
       const touch = touches.get(event.pointerId);
       if (!touch) return;
       touch.x = event.clientX;
@@ -258,7 +226,7 @@ function ModelInner({
         if (Math.abs(dx) > DECIDE || Math.abs(dy) > DECIDE) {
           if (enableManualRotation && Math.abs(dx) > Math.abs(dy)) {
             mode = 'rotate';
-            canvas.setPointerCapture(event.pointerId);
+            el.setPointerCapture(event.pointerId);
           } else {
             mode = 'idle';
             touches.clear();
@@ -267,19 +235,17 @@ function ModelInner({
       }
 
       if (mode === 'rotate') {
+        event.preventDefault();
         const dx = event.clientX - lastX;
         const dy = event.clientY - lastY;
         lastX = event.clientX;
         lastY = event.clientY;
         outer.current.rotation.y += dx * ROTATE_SPEED;
-        outer.current.rotation.x = THREE.MathUtils.clamp(
-          outer.current.rotation.x + dy * ROTATE_SPEED,
-          -Math.PI / 2.2,
-          Math.PI / 2.2
-        );
+        outer.current.rotation.x += dy * ROTATE_SPEED;
         vel.current = { x: dx * ROTATE_SPEED, y: dy * ROTATE_SPEED };
         invalidate();
       } else if (mode === 'pinch' && touches.size === 2) {
+        event.preventDefault();
         const [a, b] = [...touches.values()];
         const distance = Math.hypot(a.x - b.x, a.y - b.y);
         const ratio = startDist / Math.max(distance, 0.001);
@@ -288,22 +254,21 @@ function ModelInner({
       }
     };
 
-    const handleUp = (event) => {
+    const up = (event) => {
       touches.delete(event.pointerId);
       if (mode === 'rotate' && touches.size === 0) mode = 'idle';
       if (mode === 'pinch' && touches.size < 2) mode = 'idle';
     };
 
-    canvas.addEventListener('pointerdown', handleDown, { passive: true });
-    window.addEventListener('pointermove', handleMove, { passive: false });
-    window.addEventListener('pointerup', handleUp, { passive: true });
-    window.addEventListener('pointercancel', handleUp, { passive: true });
-
+    el.addEventListener('pointerdown', down, { passive: true });
+    window.addEventListener('pointermove', move, { passive: false });
+    window.addEventListener('pointerup', up, { passive: true });
+    window.addEventListener('pointercancel', up, { passive: true });
     return () => {
-      canvas.removeEventListener('pointerdown', handleDown);
-      window.removeEventListener('pointermove', handleMove);
-      window.removeEventListener('pointerup', handleUp);
-      window.removeEventListener('pointercancel', handleUp);
+      el.removeEventListener('pointerdown', down);
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', up);
+      window.removeEventListener('pointercancel', up);
     };
   }, [gl, enableManualRotation, enableManualZoom, minZoom, maxZoom, camera]);
 
@@ -335,11 +300,7 @@ function ModelInner({
     projected.y += yOff + cPar.current.y;
     outer.current.position.copy(projected.unproject(camera));
 
-    outer.current.rotation.x = THREE.MathUtils.clamp(
-      outer.current.rotation.x + (cHov.current.x - prevHoverX),
-      -Math.PI / 2.2,
-      Math.PI / 2.2
-    );
+    outer.current.rotation.x += cHov.current.x - prevHoverX;
     outer.current.rotation.y += cHov.current.y - prevHoverY;
 
     if (autoRotate) {
@@ -348,11 +309,7 @@ function ModelInner({
     }
 
     outer.current.rotation.y += vel.current.x;
-    outer.current.rotation.x = THREE.MathUtils.clamp(
-      outer.current.rotation.x + vel.current.y,
-      -Math.PI / 2.2,
-      Math.PI / 2.2
-    );
+    outer.current.rotation.x += vel.current.y;
     vel.current.x *= INERTIA;
     vel.current.y *= INERTIA;
 
@@ -369,15 +326,16 @@ function ModelInner({
   });
 
   if (!content) return null;
-
   return (
     <group ref={outer}>
-      <group ref={inner} />
+      <group ref={inner}>
+        <primitive object={content} />
+      </group>
     </group>
   );
-}
+};
 
-function ModelViewer({
+const ModelViewer = ({
   url,
   width = 400,
   height = 400,
@@ -388,7 +346,6 @@ function ModelViewer({
   defaultZoom = 0.5,
   minZoomDistance = 0.5,
   maxZoomDistance = 10,
-  defaultDistance,
   enableMouseParallax = true,
   enableManualRotation = true,
   enableHoverRotation = true,
@@ -399,15 +356,19 @@ function ModelViewer({
   rimLightIntensity = 0.8,
   environmentPreset = 'forest',
   autoFrame = false,
-  placeholderSrc,
-  showScreenshotButton = true,
   fadeIn = false,
   autoRotate = false,
   autoRotateSpeed = 0.35,
-  dprRange = [1, 1.5],
-  showContactShadows = false,
+  showScreenshotButton = true,
+  placeholderSrc,
   onModelLoaded
-}) {
+}) => {
+  useEffect(() => {
+    if (url.endsWith('.glb') || url.endsWith('.gltf')) {
+      useGLTF.preload(url);
+    }
+  }, [url]);
+
   const pivot = useRef(new THREE.Vector3()).current;
   const contactRef = useRef(null);
   const rendererRef = useRef(null);
@@ -423,77 +384,62 @@ function ModelViewer({
     const scene = sceneRef.current;
     const camera = cameraRef.current;
     if (!renderer || !scene || !camera) return;
-    const prevTone = renderer.toneMappingExposure;
-    renderer.toneMappingExposure = 1.0;
-    const wasShadowEnabled = renderer.shadowMap.enabled;
-    if (wasShadowEnabled) renderer.shadowMap.enabled = false;
-    const cache = [];
-    scene.traverse((object) => {
-      if (object.isLight && 'castShadow' in object) {
-        cache.push({ light: object, castShadow: object.castShadow });
-        object.castShadow = false;
+    renderer.shadowMap.enabled = false;
+    const lights = [];
+    scene.traverse((o) => {
+      if (o.isLight && 'castShadow' in o) {
+        lights.push({ light: o, castShadow: o.castShadow });
+        o.castShadow = false;
       }
     });
-    const hadContact = contactRef.current?.visible;
     if (contactRef.current) contactRef.current.visible = false;
     renderer.render(scene, camera);
-    const dataURL = renderer.domElement.toDataURL('image/png');
+    const urlPNG = renderer.domElement.toDataURL('image/png');
     const link = document.createElement('a');
     link.download = 'model.png';
-    link.href = dataURL;
+    link.href = urlPNG;
     link.click();
-    renderer.toneMappingExposure = prevTone;
-    if (wasShadowEnabled) renderer.shadowMap.enabled = true;
-    cache.forEach(({ light, castShadow }) => (light.castShadow = castShadow));
-    if (contactRef.current && hadContact !== undefined) contactRef.current.visible = hadContact;
+    renderer.shadowMap.enabled = true;
+    lights.forEach(({ light, castShadow }) => {
+      light.castShadow = castShadow;
+    });
+    if (contactRef.current) contactRef.current.visible = true;
     invalidate();
   };
-
-  useEffect(() => {
-    if (typeof width === 'number' || typeof height === 'number') return;
-    invalidate();
-  }, [width, height]);
 
   return (
     <div
       style={{
         width,
         height,
-        touchAction: 'pan-y pinch-zoom',
-        position: 'relative'
+        position: 'relative',
+        touchAction: 'pan-y pinch-zoom'
       }}
     >
       {showScreenshotButton && (
         <button
-          type="button"
           onClick={capture}
           style={{
             position: 'absolute',
-            border: '1px solid rgba(255,255,255,0.6)',
-            color: '#fff',
-            background: 'rgba(15, 23, 42, 0.65)',
             right: 16,
             top: 16,
             zIndex: 10,
             cursor: 'pointer',
             padding: '8px 16px',
             borderRadius: 10,
-            backdropFilter: 'blur(6px)'
+            border: '1px solid rgba(148, 163, 184, 0.35)',
+            background: 'rgba(3,7,18,0.75)',
+            color: '#e2e8f0'
           }}
         >
-          Take Screenshot
+          Screenshot
         </button>
       )}
 
       <Canvas
-        shadows={showContactShadows}
+        shadows
         frameloop="demand"
-        dpr={dprRange}
-        gl={{
-          preserveDrawingBuffer: showScreenshotButton,
-          powerPreference: 'high-performance',
-          antialias: true
-        }}
+        gl={{ preserveDrawingBuffer: true }}
         onCreated={({ gl, scene, camera }) => {
           rendererRef.current = gl;
           sceneRef.current = scene;
@@ -511,9 +457,7 @@ function ModelViewer({
         <directionalLight position={[-5, 2, 5]} intensity={fillLightIntensity} />
         <directionalLight position={[0, 4, -5]} intensity={rimLightIntensity} />
 
-        {showContactShadows && (
-          <ContactShadows ref={contactRef} position={[0, -0.5, 0]} opacity={0.35} scale={10} blur={2} />
-        )}
+        <ContactShadows ref={contactRef} position={[0, -0.5, 0]} opacity={0.35} scale={10} blur={2} />
 
         <Suspense fallback={<Loader placeholderSrc={placeholderSrc} />}>
           <ModelInner
@@ -537,12 +481,10 @@ function ModelViewer({
           />
         </Suspense>
 
-        {!isTouch && (
-          <DesktopControls pivot={pivot} min={minZoomDistance} max={maxZoomDistance} zoomEnabled={enableManualZoom} />
-        )}
+        {!isTouch && <DesktopControls pivot={pivot} min={minZoomDistance} max={maxZoomDistance} zoomEnabled={enableManualZoom} />}
       </Canvas>
     </div>
   );
-}
+};
 
 export default ModelViewer;
