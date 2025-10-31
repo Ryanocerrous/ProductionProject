@@ -55,6 +55,7 @@ const ModelInner = ({
   initPitch,
   minZoom,
   maxZoom,
+  scaleMultiplier,
   enableMouseParallax,
   enableManualRotation,
   enableHoverRotation,
@@ -95,7 +96,7 @@ const ModelInner = ({
     const sphere = new THREE.Box3().setFromObject(g).getBoundingSphere(new THREE.Sphere());
     const scale = 1 / (sphere.radius * 2);
     g.position.set(-sphere.center.x, -sphere.center.y, -sphere.center.z);
-    g.scale.setScalar(scale);
+    g.scale.setScalar(scale * scaleMultiplier);
 
     g.traverse((o) => {
       if (o.isMesh) {
@@ -165,7 +166,11 @@ const ModelInner = ({
       lastX = event.clientX;
       lastY = event.clientY;
       outer.current.rotation.y += dx * ROTATE_SPEED;
-      outer.current.rotation.x += dy * ROTATE_SPEED;
+      outer.current.rotation.x = THREE.MathUtils.clamp(
+        outer.current.rotation.x + dy * ROTATE_SPEED,
+        -Math.PI / 2.2,
+        Math.PI / 2.2
+      );
       vel.current = { x: dx * ROTATE_SPEED, y: dy * ROTATE_SPEED };
       invalidate();
     };
@@ -241,7 +246,11 @@ const ModelInner = ({
         lastX = event.clientX;
         lastY = event.clientY;
         outer.current.rotation.y += dx * ROTATE_SPEED;
-        outer.current.rotation.x += dy * ROTATE_SPEED;
+        outer.current.rotation.x = THREE.MathUtils.clamp(
+          outer.current.rotation.x + dy * ROTATE_SPEED,
+          -Math.PI / 2.2,
+          Math.PI / 2.2
+        );
         vel.current = { x: dx * ROTATE_SPEED, y: dy * ROTATE_SPEED };
         invalidate();
       } else if (mode === 'pinch' && touches.size === 2) {
@@ -295,12 +304,15 @@ const ModelInner = ({
     cHov.current.x += (tHov.current.x - cHov.current.x) * HOVER_EASE;
     cHov.current.y += (tHov.current.y - cHov.current.y) * HOVER_EASE;
 
-    const projected = pivotW.current.clone().project(camera);
-    projected.x += xOff + cPar.current.x;
-    projected.y += yOff + cPar.current.y;
-    outer.current.position.copy(projected.unproject(camera));
+    outer.current.position.copy(pivotW.current);
+    outer.current.position.x += xOff + cPar.current.x;
+    outer.current.position.y += yOff + cPar.current.y;
 
-    outer.current.rotation.x += cHov.current.x - prevHoverX;
+    outer.current.rotation.x = THREE.MathUtils.clamp(
+      outer.current.rotation.x + (cHov.current.x - prevHoverX),
+      -Math.PI / 2.2,
+      Math.PI / 2.2
+    );
     outer.current.rotation.y += cHov.current.y - prevHoverY;
 
     if (autoRotate) {
@@ -309,7 +321,11 @@ const ModelInner = ({
     }
 
     outer.current.rotation.y += vel.current.x;
-    outer.current.rotation.x += vel.current.y;
+    outer.current.rotation.x = THREE.MathUtils.clamp(
+      outer.current.rotation.x + vel.current.y,
+      -Math.PI / 2.2,
+      Math.PI / 2.2
+    );
     vel.current.x *= INERTIA;
     vel.current.y *= INERTIA;
 
@@ -346,6 +362,7 @@ const ModelViewer = ({
   defaultZoom = 0.5,
   minZoomDistance = 0.5,
   maxZoomDistance = 10,
+  scaleMultiplier = 1,
   enableMouseParallax = true,
   enableManualRotation = true,
   enableHoverRotation = true,
@@ -469,6 +486,7 @@ const ModelViewer = ({
             initPitch={initPitch}
             minZoom={minZoomDistance}
             maxZoom={maxZoomDistance}
+            scaleMultiplier={scaleMultiplier}
             enableMouseParallax={enableMouseParallax}
             enableManualRotation={enableManualRotation}
             enableHoverRotation={enableHoverRotation}
