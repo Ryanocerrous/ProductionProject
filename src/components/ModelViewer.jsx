@@ -15,9 +15,9 @@ const PARALLAX_MAG = 0.05;
 const PARALLAX_EASE = 0.12;
 const HOVER_MAG = deg2rad(6);
 const HOVER_EASE = 0.15;
-const MAX_PITCH = deg2rad(18);
-const FRAME_PADDING = 2;
-const PITCH_DAMPING = 0.8;
+const MAX_PITCH = deg2rad(40);
+const FRAME_PADDING = 1;
+const PITCH_DAMPING = 0.3;
 
 const Loader = ({ placeholderSrc }) => {
   const { progress, active } = useProgress();
@@ -157,7 +157,7 @@ const ModelInner = ({
       const distance = autoFrame ? Math.max(desired, fitDistance) : desired;
       const near = Math.max(distance / 10, 0.01);
       const far = Math.max(distance * 10, near + 0.1);
-      persp.position.set(0, 0, distance);
+      persp.position.set(0, 1, distance);
       persp.near = near;
       persp.far = far;
       persp.lookAt(0, 0, 0);
