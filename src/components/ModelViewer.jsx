@@ -16,7 +16,7 @@ const PARALLAX_EASE = 0.12;
 const HOVER_MAG = deg2rad(6);
 const HOVER_EASE = 0.15;
 const MAX_PITCH = deg2rad(18);
-const FRAME_PADDING = 1.0;
+const FRAME_PADDING = 1.5;
 const PITCH_DAMPING = 0.4;
 
 const Loader = ({ placeholderSrc }) => {
