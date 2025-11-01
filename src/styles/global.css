@@ -4,7 +4,7 @@
   --color-accent: #ff4df6;
   --color-dark: #e2e8f0;
   --color-muted: #7c8ca8;
-  --color-background: #030712;
+  --color-background: #000000;
   --color-surface: #10182a;
   --color-surface-alt: #0b1120;
   --font-display: 'Manrope', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
@@ -217,15 +217,11 @@ section {
   letter-spacing: 0.01em;
 }
 
-.navbar-glyph {
-  width: 44px;
-  height: 44px;
-  border-radius: 14px;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
-  display: grid;
-  place-items: center;
-  color: #fff;
-  font-size: 1.2rem;
+.navbar-logo {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  border-radius: 3px;
 }
 
 .navbar-title {
@@ -430,6 +426,15 @@ section {
   text-align: center;
   margin: 4.5rem auto;
   padding: 1.75rem 0;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.hero-wordmark-logo {
+  width: clamp(72px, 12vw, 120px);
+  height: clamp(72px, 12vw, 120px);
+  object-fit: contain;
+  border-radius: 16px;
 }
 
 .hero-wordmark-text {

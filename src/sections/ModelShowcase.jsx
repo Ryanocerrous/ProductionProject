@@ -7,7 +7,7 @@ function ModelShowcase() {
       <div className="hero-model">
         <ElectricBorder color="#7df9ff" speed={1.1} chaos={0.45} thickness={2.5} style={{ borderRadius: 32 }}>
           <div className="hero-model-frame">
-            <span className="hero-model-label">Prototype chassis</span>
+            <span className="hero-model-label">Prototype device - Give it a spin!</span>
             <div className="hero-model-viewer">
               <ModelViewer
                 url="/media/bytebite-unit.glb"
@@ -30,7 +30,7 @@ function ModelShowcase() {
               />
             </div>
             <p>
-              Designed and built on Fusion 360 and rendered using Blender, showcasing the rugged and compact design ready&apos;for the harshest of field operations.
+              Designed and built with Fusion 360 and rendered using Blender, showcasing the rugged and compact design <br/> ready for the harshest of field operations.
             </p>
           </div>
         </ElectricBorder>

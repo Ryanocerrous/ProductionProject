@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Page Not Found · ByteBite</title>
+    <style>
+      :root {
+        color-scheme: dark;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        background: radial-gradient(circle at 20% 20%, rgba(0, 240, 255, 0.12), transparent 55%),
+          radial-gradient(circle at 80% 10%, rgba(124, 59, 255, 0.16), transparent 45%),
+          #030712;
+        color: #e2e8f0;
+        padding: 2rem;
+      }
+      .card {
+        max-width: 560px;
+        width: min(92vw, 560px);
+        border-radius: 28px;
+        padding: 2.5rem;
+        border: 1px solid rgba(148, 163, 184, 0.25);
+        background: rgba(15, 23, 42, 0.85);
+        box-shadow: 0 24px 70px rgba(2, 6, 23, 0.65);
+        text-align: center;
+        display: grid;
+        gap: 1.75rem;
+      }
+ .card img {
+  width: clamp(120px, 20vw, 600px);
+  height: clamp(120px, 20vw, 300px);
+  border-radius: 16px;
+  object-fit: cover;
+  margin: 0 auto;
+  box-shadow: 0 0 40px rgba(0, 240, 255, 0.25);
+}
+
+      h1 {
+        margin: 0;
+        font-size: clamp(2.4rem, 5vw, 3.2rem);
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        background: linear-gradient(135deg, rgba(0, 240, 255, 0.95), rgba(255, 77, 246, 0.85));
+        -webkit-background-clip: text;
+        color: transparent;
+      }
+      p {
+        margin: 0;
+        line-height: 1.6;
+        color: rgba(226, 232, 240, 0.78);
+      }
+      a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.85rem 1.6rem;
+        border-radius: 999px;
+        background: linear-gradient(135deg, rgba(0, 240, 255, 0.92), rgba(96, 165, 250, 0.92));
+        color: #051022;
+        font-weight: 600;
+        text-decoration: none;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      a:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 30px rgba(0, 240, 255, 0.25);
+      }
+      small {
+        color: rgba(148, 163, 184, 0.65);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <img src="/media/404ninja.png" alt="ByteBite logo" />
+      <h1>404</h1>
+      <p>Looks like this page can't be found. </p>
+      <a href="/">Return to Homepage</a>
+      <small>ByteBite Field Systems</small>
+    </div>
+  </body>
+</html>

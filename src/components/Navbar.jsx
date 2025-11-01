@@ -16,7 +16,7 @@ function Navbar() {
     <header className="navbar">
       <div className="container navbar-inner">
         <a href="#top" className="navbar-brand">
-          <span className="navbar-glyph">BB</span>
+          <img src="/media/bytebite-logo.png" alt="ByteBite logo" className="navbar-logo" />
           <span className="navbar-title">ByteBite</span>
         </a>
         <div className="navbar-actions">
