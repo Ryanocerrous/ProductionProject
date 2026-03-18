@@ -199,14 +199,20 @@ section {
   padding: 3rem 1.5rem;
 }
 
+.support-electric {
+  width: min(1500px, 98vw);
+  border-radius: 16px;
+}
+
 .support-card {
-  width: min(980px, 96vw);
+  width: 100%;
+  min-height: 78vh;
   background: #f4f5f7;
   color: #1f2937;
   border: 1px solid #d1d5db;
   border-radius: 16px;
   box-shadow: 0 14px 32px rgba(2, 6, 23, 0.35);
-  padding: clamp(1.25rem, 3vw, 2.2rem);
+  padding: clamp(1.6rem, 3.2vw, 2.7rem);
   display: grid;
   gap: 1.1rem;
 }
@@ -1487,6 +1493,10 @@ section {
 @media (max-width: 520px) {
   .support-grid {
     grid-template-columns: 1fr;
+  }
+
+  .support-electric {
+    width: 100%;
   }
 
   .support-card,
