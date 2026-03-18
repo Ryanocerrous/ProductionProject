@@ -58,6 +58,11 @@ function IkeaManual() {
   return (
     <section className="ikea-manual" aria-label="ByteBite IKEA-style manual">
       <header className="ikea-manual-header">
+        <div className="ikea-manual-actions">
+          <button type="button" className="manual-print-button" onClick={() => window.print()}>
+            Print Manual
+          </button>
+        </div>
         <p className="ikea-part-code">BYTEBITE BB-01</p>
         <h2>Operator Manual</h2>
         <p>Read in order: buttons, power on, menu navigation, then each menu workflow.</p>
