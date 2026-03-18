@@ -10,7 +10,9 @@
     }
   ],
   "rewrites": [
-    { "source": "/login", "destination": "/" }
+    { "source": "/login", "destination": "/" },
+    { "source": "/support", "destination": "/" },
+    { "source": "/support/(.*)", "destination": "/" }
   ],
   "headers": [
     {
