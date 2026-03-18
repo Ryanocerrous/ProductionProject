@@ -20,7 +20,7 @@ import {
 
 function App() {
   return (
-    <div>
+    <div id="top">
       <Navbar />
       <main>
         <Hero />

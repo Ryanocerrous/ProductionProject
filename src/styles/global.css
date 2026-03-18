@@ -192,6 +192,335 @@ section {
   color: #a855f7;
 }
 
+.support-wrapper {
+  min-height: calc(100vh - 110px);
+  display: grid;
+  place-items: center;
+  padding: 3rem 1.5rem;
+}
+
+.support-card {
+  width: min(980px, 96vw);
+  background: #f4f5f7;
+  color: #1f2937;
+  border: 1px solid #d1d5db;
+  border-radius: 16px;
+  box-shadow: 0 14px 32px rgba(2, 6, 23, 0.35);
+  padding: clamp(1.25rem, 3vw, 2.2rem);
+  display: grid;
+  gap: 1.1rem;
+}
+
+.support-header {
+  text-align: center;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.support-header h1 {
+  margin: 0;
+  font-size: clamp(1.7rem, 4vw, 2.2rem);
+  color: #111827;
+}
+
+.support-header p {
+  margin: 0;
+  color: #4b5563;
+}
+
+.support-search {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  width: min(460px, 100%);
+  justify-self: center;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 0.7rem 0.9rem;
+}
+
+.support-search-icon {
+  color: #6b7280;
+}
+
+.support-search input {
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: #111827;
+  font: inherit;
+}
+
+.support-search input:focus {
+  outline: none;
+}
+
+.support-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.7rem;
+}
+
+.support-tile {
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 1rem 0.7rem;
+  min-height: 120px;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 0.55rem;
+  color: #1f2937;
+  text-align: center;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color var(--transition-base), transform var(--transition-base);
+}
+
+.support-tile:visited {
+  color: #1f2937;
+}
+
+.support-tile:hover,
+.support-tile:focus-visible {
+  border-color: #00b9d1;
+  transform: translateY(-1px);
+  outline: none;
+}
+
+.support-icon {
+  font-size: 2rem;
+  line-height: 1;
+  color: #6b7280;
+}
+
+.support-empty {
+  margin: 0.25rem auto 0;
+  text-align: center;
+  color: #4b5563;
+  font-weight: 600;
+}
+
+.support-detail-card {
+  width: min(980px, 96vw);
+  background: #f4f5f7;
+  color: #1f2937;
+  border: 1px solid #d1d5db;
+  border-radius: 16px;
+  box-shadow: 0 14px 32px rgba(2, 6, 23, 0.35);
+  padding: clamp(1.25rem, 3vw, 2.2rem);
+  display: grid;
+  gap: 1.2rem;
+}
+
+.support-detail-header {
+  display: grid;
+  gap: 0.5rem;
+  text-align: center;
+}
+
+.support-back-link {
+  justify-self: start;
+  font-weight: 700;
+  color: #0f766e;
+}
+
+.support-topic-icon {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.support-detail-header h1 {
+  margin: 0;
+  font-size: clamp(1.8rem, 4.2vw, 2.4rem);
+  color: #111827;
+}
+
+.support-detail-header p {
+  margin: 0;
+  color: #374151;
+}
+
+.support-section-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+
+.support-section-card {
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.support-section-card h2 {
+  margin: 0 0 0.7rem;
+  font-size: 1.1rem;
+  color: #111827;
+}
+
+.support-section-card ul {
+  margin: 0;
+  padding-left: 1.15rem;
+  display: grid;
+  gap: 0.5rem;
+  color: #374151;
+}
+
+.ikea-manual {
+  border: 2px solid #111827;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: clamp(1rem, 2vw, 1.4rem);
+  display: grid;
+  gap: 1rem;
+}
+
+.ikea-manual-header {
+  display: grid;
+  gap: 0.35rem;
+  border-bottom: 2px solid #111827;
+  padding-bottom: 0.8rem;
+}
+
+.ikea-manual-header h2 {
+  margin: 0;
+  color: #111827;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.ikea-manual-header p {
+  margin: 0;
+  color: #374151;
+}
+
+.ikea-part-code {
+  margin: 0;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  font-size: 0.9rem;
+}
+
+.ikea-drawing-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.ikea-drawing-card {
+  margin: 0;
+  border: 2px solid #111827;
+  border-radius: 10px;
+  padding: 0.75rem;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.ikea-drawing-card svg {
+  width: 100%;
+  height: auto;
+  color: #111827;
+}
+
+.ikea-drawing-card figcaption {
+  font-size: 0.88rem;
+  color: #111827;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.ikea-callouts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.ikea-callout {
+  border: 2px solid #111827;
+  border-radius: 10px;
+  display: grid;
+  grid-template-columns: 36px 1fr;
+  gap: 0.65rem;
+  align-items: start;
+  padding: 0.7rem;
+}
+
+.ikea-callout-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  border: 2px solid #111827;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+}
+
+.ikea-callout p {
+  margin: 0;
+  color: #1f2937;
+  line-height: 1.45;
+}
+
+.ikea-steps {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.ikea-step-card {
+  border: 2px solid #111827;
+  border-radius: 10px;
+  padding: 0.8rem;
+  display: grid;
+  grid-template-columns: 38px 1fr;
+  gap: 0.7rem;
+  align-items: start;
+}
+
+.ikea-step-number {
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  border: 2px solid #111827;
+  display: grid;
+  place-items: center;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.ikea-step-card h3 {
+  margin: 0 0 0.35rem;
+  color: #111827;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  font-size: 0.98rem;
+}
+
+.ikea-step-card p {
+  margin: 0;
+  color: #374151;
+  line-height: 1.45;
+}
+
+.ikea-step-list {
+  margin: 0;
+  padding-left: 1.1rem;
+  color: #374151;
+  display: grid;
+  gap: 0.35rem;
+  line-height: 1.45;
+}
+
 .navbar {
   position: sticky;
   top: 0;
@@ -1057,6 +1386,20 @@ section {
     justify-content: center;
   }
 
+  .support-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .support-section-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ikea-drawing-grid,
+  .ikea-callouts,
+  .ikea-steps {
+    grid-template-columns: 1fr;
+  }
+
   .hero {
     padding-top: 5rem;
   }
@@ -1106,5 +1449,16 @@ section {
 
   .cta {
     padding: 2.5rem;
+  }
+}
+
+@media (max-width: 520px) {
+  .support-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .support-card,
+  .support-detail-card {
+    width: 100%;
   }
 }

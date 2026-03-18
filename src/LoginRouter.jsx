@@ -1,10 +1,32 @@
 import App from './App.jsx';
 import AuthPage from './pages/AuthPage.jsx';
+import SupportPage from './pages/SupportPage.jsx';
+import SupportTopicPage from './pages/SupportTopicPage.jsx';
+import { getSupportTopicBySlug } from './content/supportTopics.js';
 
-const isAuthRoute = window.location.pathname.replace(/\/$/, '') === '/login';
+const currentRoute = window.location.pathname.replace(/\/$/, '') || '/';
 
 function LoginRouter() {
-  return isAuthRoute ? <AuthPage /> : <App />;
+  if (currentRoute === '/login') {
+    return <AuthPage />;
+  }
+
+  if (currentRoute === '/support') {
+    return <SupportPage />;
+  }
+
+  if (currentRoute.startsWith('/support/')) {
+    const topicSlug = currentRoute.slice('/support/'.length);
+    const topic = getSupportTopicBySlug(topicSlug);
+
+    if (topic) {
+      return <SupportTopicPage topic={topic} />;
+    }
+
+    return <SupportPage />;
+  }
+
+  return <App />;
 }
 
 export default LoginRouter;
