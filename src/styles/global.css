@@ -427,6 +427,13 @@ section {
   color: #111827;
 }
 
+.ikea-drawing-card img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 4px;
+}
+
 .ikea-drawing-card figcaption {
   font-size: 0.88rem;
   color: #111827;
