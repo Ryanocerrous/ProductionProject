@@ -25,7 +25,7 @@ function SupportPage() {
         <ElectricBorder
           color="#7df9ff"
           chaos={0.45}
-          speed={1.4}
+          speed={0.4}
           thickness={1.6}
           className="support-electric"
           style={{ borderRadius: 16 }}
